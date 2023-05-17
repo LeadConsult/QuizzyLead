@@ -5,9 +5,9 @@ from werkzeug.utils import secure_filename
 import os
 import csv
 import sqlite3
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+# db = SQLAlchemy()
 
 
 app = Flask(__name__)
@@ -277,4 +277,5 @@ def logout():
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = 'questions' # Define the upload directory
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.debug(debug=False,host='0.0.0.0')
