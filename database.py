@@ -1,10 +1,14 @@
 import sqlite3
 from flask import g
+import os
 
 def connect_to_DB():
-    sql = sqlite3.connect("C:/Users/USER/Desktop/ALX/QuizzyLead/app_database.db")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_file = os.path.join(current_dir, "app_database.db")
+    sql = sqlite3.connect(db_file)
     sql.row_factory = sqlite3.Row
     return sql
+
     
     
 def getDatabase():
