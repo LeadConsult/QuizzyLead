@@ -2,7 +2,7 @@ import sqlite3
 from flask import g
 
 def connect_to_DB():
-    sql = sqlite3.connect("C:/Users/USER/Desktop/ALX/quizApp/app_database.db")
+    sql = sqlite3.connect("C:/Users/USER/Desktop/ALX/QuizzyLead/app_database.db")
     sql.row_factory = sqlite3.Row
     return sql
     

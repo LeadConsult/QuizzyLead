@@ -9,6 +9,16 @@ import sqlite3
 
 # db = SQLAlchemy()
 
+# def trace_callback(statement):
+#     print("SQL statement:", statement)
+
+# # Enable tracing
+# sqlite3.enable_callback_tracebacks(True)
+# sqlite3.trace_callback = trace_callback
+
+# # Connect to the database and execute operations
+# conn = sqlite3.connect("app_database.db")
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -23,8 +33,15 @@ def get_current_user():
     if 'user' in session:
         user = session['user']
         db = getDatabase()
-        user_cursor = db.execute("select * from users where name = ?", [user])
-        user_result = user_cursor.fetchone()
+        # Check in "students" table
+        student_cursor = db.execute("SELECT * FROM students WHERE name = ?", [user])
+        student_result = student_cursor.fetchone()
+        if student_result:
+            user_result = student_result
+        else:
+            # Check in "users" table
+            user_cursor = db.execute("SELECT * FROM users WHERE name = ?", [user])
+            user_result = user_cursor.fetchone()
     return user_result
 
 
@@ -59,8 +76,13 @@ def login():
         password = request.form['password']
         
         db = getDatabase()
-        dbuser_cursor = db.execute("select * from users where name =?", [name])
-        dbuser = dbuser_cursor.fetchone()
+        users_cursor = db.execute("SELECT * FROM users WHERE name = ?", [name])
+        dbuser = users_cursor.fetchone()
+        
+        if not dbuser:
+            students_cursor = db.execute("SELECT * FROM students WHERE name = ?", [name])
+            dbuser = students_cursor.fetchone()
+
         
         if dbuser:
             if check_password_hash(dbuser['password'], password):
@@ -93,7 +115,7 @@ def register():
             error = "Password not thesame"
             return render_template("register.html", error = error)
         
-        user_fetching_cursor = db.execute("select * from users where name = ?", [name])
+        user_fetching_cursor = db.execute("SELECT * FROM users WHERE name = ? UNION SELECT * FROM students WHERE name = ?", [name, name])
         existing_user = user_fetching_cursor.fetchone()
         if existing_user or name == "":
             error = "Username already taken"
@@ -106,6 +128,41 @@ def register():
         session['user'] = name
         return redirect(url_for('register'))     
     return render_template("register.html", user = user)
+
+@app.route("/register_student", methods = ["POST", "GET"])
+def register_student():
+    user = get_current_user()
+    if request.method == "POST":
+        if 'klass' not in request.form:
+            error = "Please select a class"
+            return render_template("register_student.html", error=error)
+        
+        db = getDatabase()
+        name = request.form['username']
+        password = request.form['password']
+        klass = request.form['klass']
+        fullname = request.form['fullname']
+        confirm_password = request.form['confirm_password']
+        
+        if password != confirm_password or password == "":
+            error = "Password not thesame"
+            return render_template("register_student.html", error = error)
+        
+        user_fetching_cursor = db.execute("SELECT * FROM users WHERE name = ? UNION SELECT * FROM students WHERE name = ?", [name, name])
+        existing_user = user_fetching_cursor.fetchone()
+        if existing_user or name == "":
+            error = "Username already taken"
+            return render_template("register_student.html", error = error)
+              
+        hashed_pass = generate_password_hash(password, method='sha256')
+        db.execute("insert into students (name, fullname, password, klass) values (?,?,?,?)",
+                   [name, fullname, hashed_pass, klass])
+        db.commit()
+        # session['user'] = name
+        if True:
+            msg = "Student added Successfully"
+            return render_template("register_student.html", error = msg)
+    return render_template("register_student.html", user = user)
 
 @app.route("/resetpassword", methods=['GET','POST'])
 def resetpassword():
@@ -175,13 +232,13 @@ def create_test():
         #              (test_title, teacher_name))
         # conn.commit()        
         # db = getDatabase()
-        conn.execute('INSERT INTO tests (title, teacher_name) VALUES (?, ?)',
-                     (test_title, teacher_name))
+        conn.execute('INSERT INTO tests (title, teacher_name, assigned_test, assigned_klass) VALUES (?, ?, ?, ?)',
+                     (test_title, teacher_name, 0, "Not Assigned"))
         # conn.commit()
         
         # Get the test_teacher of the newly created test
-        test_teacher = conn.execute('SELECT teacher_name FROM tests WHERE title = ? AND teacher_name = ?',
-                               (test_title, teacher_name)).fetchone()[0]
+        test_teacher = conn.execute('SELECT teacher_name FROM tests WHERE title = ? AND teacher_name = ?', 
+                                    (test_title, teacher_name)).fetchone()[0]
         test_id = conn.execute('SELECT id FROM tests WHERE title = ? AND teacher_name = ?',
                                (test_title, teacher_name)).fetchone()[0]
         
@@ -215,25 +272,6 @@ def create_test():
         return render_template("create_test.html", user = user,  success = "Questions successfully uploaded")
     return render_template("create_test.html", user = user)
 
-# @app.route("/take_test",  methods = ["POST", "GET"])
-# def take_test():
-#     user = get_current_user()
-#     db = connect_to_DB()
-#     submitted_answers = request.form.getlist('answers')
-#     correct_answers = db.execute("SELECT answer FROM questions WHERE test_id = 30").fetchall()
-    
-#     score = 0
-#     for i in range(len(submitted_answers)):
-#         if submitted_answers[i] == correct_answers[i][0]:
-#             score += 1
-#         print(score)
-    
-#     quiz_cursor = db.execute(f"SELECT * FROM questions where test_id = 30")
-#     quiz_questions = quiz_cursor.fetchall()
-    
-#     return render_template("take_test.html", user = user, quiz_questions = quiz_questions)
-
-
 @app.route("/viewquiz",  methods = ["POST", "GET"])
 def viewquiz():
     user = get_current_user()
@@ -243,13 +281,141 @@ def viewquiz():
     tests = query.fetchall()
     return render_template("viewquiz.html", user = user, tests = tests)
 
+@app.route("/take_test", methods=["POST", "GET"])
+def take_test():
+    user = get_current_user()
+    db = connect_to_DB()
+
+    klass = user["klass"] 
+    query = db.execute("SELECT * FROM tests WHERE assigned_klass = ?", [klass])
+    tests = query.fetchall()
+
+    return render_template("take_test.html", user=user, tests=tests)
+
+
+@app.route("/assign_test", methods=["POST", "GET"])
+def assign_test():
+    user = get_current_user()
+    db = connect_to_DB()
+    teacher_name = user[1]
+    query = db.execute("SELECT * FROM tests WHERE teacher_name = ?", [teacher_name])
+    tests = query.fetchall()
+
+    if request.method == "POST":
+        test_id = request.form.get("test_id")
+        test_teacher = request.form.get("test_teacher")
+        klass = request.form.get("klass")
+        
+        if klass == "select":
+            error = "Please select a class."
+            return render_template("assign_test.html", user=user, tests=tests, error=error)
+
+        # Check if the test is already assigned
+        assigned_test = db.execute(
+            "SELECT * FROM assigned_tests WHERE test_id = ? AND test_teacher = ? AND klass = ?",
+            [test_id, test_teacher, klass],
+        ).fetchone()
+
+        if assigned_test:
+            # Test is already assigned, show an error message
+            error = "Test is already assigned to the class"
+            return render_template("assign_test.html", user=user, tests=tests, error=error)
+
+        # Assign the test to the class
+        db.execute(
+            "INSERT INTO assigned_tests (test_id, test_teacher, klass) VALUES (?, ?, ?)",
+            [test_id, test_teacher, klass],
+        )
+        db.commit()
+
+        # Update the assigned_test attribute of the test in the tests table
+        db.execute(
+            "UPDATE tests SET assigned_test = 1, assigned_klass = ?, test_id = ? WHERE id = ?",
+            [klass, test_id, test_id],
+        )
+        db.commit()
+
+        # Redirect to a success page or perform any additional actions
+        # msg = "Test is assigned to the class"
+        return redirect(url_for("assign_test"))
+
+    return render_template("assign_test.html", user=user, tests=tests)
+
+
 @app.route("/tests_created/<test_id>/")
 def tests_created(test_id):
     user = get_current_user()
     db = connect_to_DB()
     quiz_cursor = db.execute(f"SELECT * FROM questions where test_id = ?", [test_id])
     quiz_questions = quiz_cursor.fetchall()
-    return render_template("tests_created.html",  user = user, quiz_questions = quiz_questions)
+    query = db.execute("SELECT title FROM tests WHERE test_id = ?", [test_id])
+    tests = query.fetchone()[0]
+    return render_template("tests_created.html",  user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id)
+
+
+@app.route("/submit_test/<test_id>/", methods=["POST", "GET"])
+def submit_test(test_id): 
+    user = get_current_user()
+    db = connect_to_DB()
+    # Retrieve the submitted answers from the form
+    submitted_answers = {}
+    for key, value in request.form.items():
+        if key.startswith('q'):
+            question_id = int(key[1:])
+            submitted_answers[question_id] = value  
+            # Store the answer as a string
+
+    # Retrieve the correct answers from the database
+    query = db.execute("SELECT id, answer FROM questions WHERE test_id = ?", [test_id])
+    # Store the answer as a string
+    correct_answers = {row[0]: row[1] for row in query.fetchall()}  
+    
+    # Retrieve the total count of questions for the test_id
+    query = db.execute("SELECT COUNT(*) FROM questions WHERE test_id = ?", [test_id])
+    total = query.fetchone()[0]
+
+    # Compare submitted answers with correct answers and calculate the score
+    score = 0
+    for question_id, submitted_answer in submitted_answers.items():
+        if question_id in correct_answers and submitted_answer == correct_answers[question_id]:
+            score += 1
+           
+    query = db.execute("SELECT title, teacher_name, assigned_klass FROM tests WHERE test_id = ?", [test_id])
+    result = query.fetchone()
+    
+    student_name = user[1]
+    student_fullname = user[2]
+    klass = result[2]
+    test_id = test_id
+    title = result[0]
+    score = score
+    teacher_name = result[1]
+    query_teacher = db.execute("SELECT fullname FROM users WHERE name = ?", [teacher_name])
+    teacher_fullname = query_teacher.fetchone()[0]
+    
+    if student_name != teacher_name:
+        db.execute("INSERT INTO completed (student_name, student_fullname, klass, test_id, title, score, teacher_name, teacher_fullname) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                [student_name, student_fullname, klass, test_id, title, score, teacher_name, teacher_fullname])
+        db.commit()
+	
+    return redirect(url_for("view_result", user=user, test_id=test_id, total = total, score = score))
+    # return render_template("view_result", test_id=test_id, total = total, score = score)
+
+@app.route("/view_result/<test_id>/", methods=["POST", "GET"])
+def view_result(test_id):
+    user = get_current_user()
+    db = connect_to_DB()
+    query = db.execute("SELECT title, score, student_fullname FROM completed WHERE test_id = ?", [test_id])
+    result = query.fetchone()
+    
+    title = result[0]
+    score = result[1]
+    student_fullname = result[2]
+    
+    return render_template("view_result.html", user = user, test_id=test_id, title=title, score=score, student_fullname=student_fullname)
+
+
+
 
 @app.route("/delete_test", methods = ["POST", "GET"])
 def delete_test():
@@ -277,5 +443,5 @@ def logout():
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = 'questions' # Define the upload directory
-    # app.run(debug=True)
-    app.debug(debug=False,host='0.0.0.0')
+    app.run(debug=True)
+    # app.debug(debug=False,host='0.0.0.0')

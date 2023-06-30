@@ -15,27 +15,27 @@
         </div>
 
         <div class="question container border text-light p-3">
-          <h1>{{ test_t }}</h1>
+          <h3>{{ tests }}</h3>
           <br>
-          <form action="/tests_created/{{ test_id }}/" method="POST">
-			{% for question in quiz_questions %}
-			<div class="card">
-				<div class="card-header text-dark">
-					<h4>Q{{ question[3] }}: {{ question[4] }}</h4>
-				</div>
-				<div class="card-body text-dark">
-					<input type="radio" name="q{{ question[0] }}" value="1">&nbsp&nbsp&nbsp{{ question[5] }} <br>
-          <input type="radio" name="q{{ question[0] }}" value="1">&nbsp&nbsp&nbsp{{ question[6] }} <br>
-          <input type="radio" name="q{{ question[0] }}" value="1">&nbsp&nbsp&nbsp{{ question[7] }} <br>
-          <input type="radio" name="q{{ question[0] }}" value="1">&nbsp&nbsp&nbsp{{ question[8] }} <br>
-			    </div>
-			</div>
+          <form action="/submit_test/{{ test_id }}/" method="POST">
+            {% for question in quiz_questions %}
+            <div class="card">
+                <div class="card-header text-dark">
+                    <h4>Q{{ question[3] }}: {{ question[4] }}</h4>
+                </div>
+                <div class="card-body text-dark">
+                    <input type="radio" name="q{{ question[0] }}" value="A">&nbsp&nbsp&nbsp A) {{ question[5] }} <br>
+                    <input type="radio" name="q{{ question[0] }}" value="B">&nbsp&nbsp&nbsp B) {{ question[6] }} <br>
+                    <input type="radio" name="q{{ question[0] }}" value="C">&nbsp&nbsp&nbsp C) {{ question[7] }} <br>
+                    <input type="radio" name="q{{ question[0] }}" value="D">&nbsp&nbsp&nbsp D) {{ question[8] }} <br>
+                </div>
+            </div>
             <br>
-			{% endfor %}
-			<!-- <button type="submit" class="btn btn-primary"></button> -->
-		</form>
-          
-        </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        
+  </div>
     
     
     
