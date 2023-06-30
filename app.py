@@ -221,6 +221,7 @@ def allusers():
 @app.route("/create_test", methods = ['GET', 'POST'])
 def create_test():
     user = get_current_user()
+    sample_csv_url = url_for("static", filename="sample.csv")
     if request.method == "POST":        
         teacher_name = user[1]
         # print(user[0])
@@ -271,7 +272,7 @@ def create_test():
                 conn.execute(query, (test_id, test_teacher, qnumber, question, option1, option2, option3, option4, answer))
                 conn.commit()
         return render_template("create_test.html", user = user,  success = "Questions successfully uploaded")
-    return render_template("create_test.html", user = user)
+    return render_template("create_test.html", user = user, sample_csv_url=sample_csv_url)
 
 @app.route("/viewquiz",  methods = ["POST", "GET"])
 def viewquiz():

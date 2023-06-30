@@ -22,17 +22,21 @@
             {% if error %}
                 <h4 style="color: yellow">{{ error }}</h4>
             {% endif %}
-          <form action="/create_test" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Subject/Class</label>
-              <input type="text" class="form-control" name="quiz_title">
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="customFile">Upload your questions</label>
-              <input type="file" class="form-control" name="csv_file" id="csv_file" />
-            </div>
-            <button type="submit" class="btn btn-primary">Upload Question</button>
-          </form>
+            <form action="/create_test" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Subject/Class</label>
+                <input type="text" class="form-control" name="quiz_title">
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="customFile">Upload your questions</label>
+                <input type="file" class="form-control" name="csv_file" id="csv_file" />
+              </div>
+              <div class="mb-3">
+                <a href="{{ sample_csv_url }}" download>Click here to download sample.csv</a>
+              </div>
+              <button type="submit" class="btn btn-primary">Upload Question</button>
+            </form>
+            
         </div>
     
     
