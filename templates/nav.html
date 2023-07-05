@@ -31,59 +31,77 @@
 
 </ul>
 
-{% endmacro %} {% macro dashboard(user) %}
+{% endmacro %} 
+
+{% macro dashboard(user) %}
 
 <div class="container p-5 my-5 border">
     <div class="row">
 
         {% if user and user['role'] == "admin" %}
-        <div class="col">
-            <div class="card">
-                <img class="card-img-top" src="static/e13.png" alt="Card image" />
-                <div class="d-grid">
-                    <a href="allusers" class="btn btn-success btn-block">
-                        View all Users
-                    </a>
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <img class="card-img-top" src="static/e13.png" alt="Card image" />
+                    <div class="d-grid">
+                        <a href="allusers" class="btn btn-success btn-block">
+                            View all Users
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <img class="card-img-top" src="static/e13.png" alt="Card image" />
+                    <div class="d-grid">
+                        <a href="register_student" class="btn btn-success btn-block">
+                            Add Student
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <img class="card-img-top" src="static/e13.png" alt="Card image" />
+                    <div class="d-grid">
+                        <a href="register" class="btn btn-success btn-block">
+                            Add Teacher/Admin
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="card">
-                <img class="card-img-top" src="static/e13.png" alt="Card image" />
-                <div class="d-grid">
-                    <a href="register_student" class="btn btn-success btn-block">
-                        Add Student
-                    </a>
+        
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <img class="card-img-top" src="static/e13.png" alt="Card image" />
+                    <div class="d-grid">
+                        <a href="resetpassword" class="btn btn-success btn-block">
+                            Reset Password
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img class="card-img-top" src="static/e13.png" alt="Card image" />
-                <div class="d-grid">
-                    <a href="register" class="btn btn-success btn-block">
-                        Add Teacher
-                    </a>
+            <div class="col">
+                <div class="card">
+                    <img class="card-img-top" src="static/e13.png" alt="Card image" />
+                    <div class="d-grid">
+                        <a href="deleteuser" class="btn btn-success btn-block">
+                            Delete User
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img class="card-img-top" src="static/e13.png" alt="Card image" />
-                <div class="d-grid">
-                    <a href="resetpassword" class="btn btn-success btn-block">
-                        Reset Password
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img class="card-img-top" src="static/e13.png" alt="Card image" />
-                <div class="d-grid">
-                    <a href="deleteuser" class="btn btn-success btn-block">
-                        Delete User
-                    </a>
+            <div class="col">
+                <div class="card">
+                    <img class="card-img-top" src="static/e13.png" alt="Card image" />
+                    <div class="d-grid">
+                        <a href="results_admin" class="btn btn-success btn-block">
+                            View Results
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -133,7 +151,7 @@
             <div class="card">
                 <img class="card-img-top" src="static/e13.png" alt="Card image" />
                 <div class="d-grid">
-                    <a href="student_results" class="btn btn-success btn-block">
+                    <a href="results_teacher" class="btn btn-success btn-block">
                         View Student Results
                     </a>
                 </div>
@@ -167,7 +185,7 @@
             <div class="card">
                 <img class="card-img-top" src="static/e13.png" alt="Card image" />
                 <div class="d-grid">
-                    <a href="student_results" class="btn btn-success btn-block">
+                    <a href="results_student" class="btn btn-success btn-block">
                         View Student Results
                     </a>
                 </div>

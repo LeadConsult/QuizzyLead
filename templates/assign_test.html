@@ -51,7 +51,7 @@
                                 <option value="PRY5">Primary 5</option>
                                 <option value="PRY6">Primary 6</option>
                             </select>
-                            <button class="btn btn-outline-dark" type="submit" {% if test.assigned_test %}disabled{% endif %}>
+                            <button class="btn btn-outline-dark" type="submit" {% if test.assigned_test %}disabled{% endif %} style="color: white">
                                 {% if test.assigned_test %}
                                 Test Assigned to {{ test.assigned_klass }}
                                 {% else %}

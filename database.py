@@ -8,8 +8,6 @@ def connect_to_DB():
     sql = sqlite3.connect(db_file)
     sql.row_factory = sqlite3.Row
     return sql
-
-    
     
 def getDatabase():
     if not hasattr(g, "app_database_db"):

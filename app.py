@@ -79,11 +79,10 @@ def login():
         db = getDatabase()
         users_cursor = db.execute("SELECT * FROM users WHERE name = ?", [name])
         dbuser = users_cursor.fetchone()
-        
+                
         if not dbuser:
             students_cursor = db.execute("SELECT * FROM students WHERE name = ?", [name])
             dbuser = students_cursor.fetchone()
-
         
         if dbuser:
             if check_password_hash(dbuser['password'], password):
@@ -103,7 +102,7 @@ def register():
     if request.method == "POST":
         if 'role' not in request.form:
             error = "Please select a role"
-            return render_template("register.html", error=error)
+            return render_template("register.html", user = user, error=error)
         
         db = getDatabase()
         name = request.form['username']
@@ -114,20 +113,22 @@ def register():
         
         if password != confirm_password or password == "":
             error = "Password not thesame"
-            return render_template("register.html", error = error)
+            return render_template("register.html", user = user, error = error)
         
         user_fetching_cursor = db.execute("SELECT * FROM users WHERE name = ? UNION SELECT * FROM students WHERE name = ?", [name, name])
         existing_user = user_fetching_cursor.fetchone()
         if existing_user or name == "":
             error = "Username already taken"
-            return render_template("register.html", error = error)
+            return render_template("register.html", user = user, error = error)
         
         hashed_pass = generate_password_hash(password, method='sha256')
         db.execute("insert into users (name, fullname, password, role) values (?,?,?,?)",
                    [name, fullname, hashed_pass, role])
         db.commit()
-        session['user'] = name
-        return redirect(url_for('register'))     
+        
+        if True:
+            msg = "New " + role + " added Successfully"
+            return render_template("register.html", user = user, error = msg)    
     return render_template("register.html", user = user)
 
 @app.route("/register_student", methods = ["POST", "GET"])
@@ -136,7 +137,7 @@ def register_student():
     if request.method == "POST":
         if 'klass' not in request.form:
             error = "Please select a class"
-            return render_template("register_student.html", error=error)
+            return render_template("register_student.html", user = user, error=error,)
         
         db = getDatabase()
         name = request.form['username']
@@ -147,22 +148,22 @@ def register_student():
         
         if password != confirm_password or password == "":
             error = "Password not thesame"
-            return render_template("register_student.html", error = error)
+            return render_template("register_student.html", user = user, error = error)
         
         user_fetching_cursor = db.execute("SELECT * FROM users WHERE name = ? UNION SELECT * FROM students WHERE name = ?", [name, name])
         existing_user = user_fetching_cursor.fetchone()
         if existing_user or name == "":
             error = "Username already taken"
-            return render_template("register_student.html", error = error)
+            return render_template("register_student.html", user = user, error = error)
               
         hashed_pass = generate_password_hash(password, method='sha256')
         db.execute("insert into students (name, fullname, password, klass) values (?,?,?,?)",
                    [name, fullname, hashed_pass, klass])
         db.commit()
-        # session['user'] = name
+        
         if True:
             msg = "Student added Successfully"
-            return render_template("register_student.html", error = msg)
+            return render_template("register_student.html", user = user, error = msg)
     return render_template("register_student.html", user = user)
 
 @app.route("/resetpassword", methods=['GET','POST'])
@@ -176,17 +177,33 @@ def resetpassword():
         
         if password != confirm_password or password == "":
             error = "Password not thesame"
-            return render_template("resetpassword.html", error = error)
+            return render_template("resetpassword.html", user = user, error = error)
         
-        user_fetching_cursor = db.execute("select * from users where name = ?", [name])
-        existing_user = user_fetching_cursor.fetchone()
-        if existing_user and name != "":
+        users_cursor = db.execute("SELECT * FROM users WHERE name = ?", [name])
+        dbuser = users_cursor.fetchone()
+        
+        if not dbuser:
+            students_cursor = db.execute("SELECT * FROM students WHERE name = ?", [name])
+            db_students = students_cursor.fetchone()
+        
+        if dbuser and name != "":
             hashed_pass = generate_password_hash(password, method='sha256')
             db.execute("UPDATE users set password = ? where name = ?", [hashed_pass, name])
-            db.commit()
-            session['user'] = name
-            return render_template('login.html', success="Your password was sucessfully changed.")     
-    return render_template("resetpassword.html", user = user,)
+            db.commit()        
+            msg = "Users password was sucessfully changed."
+            return render_template('resetpassword.html', user = user, error = msg)
+        
+        elif db_students and name != "":
+            hashed_pass = generate_password_hash(password, method='sha256')
+            db.execute("UPDATE students set password = ? where name = ?", [hashed_pass, name])
+            db.commit()    
+            msg = "Student password was sucessfully changed."
+            return render_template('resetpassword.html', user = user, error = msg)
+        
+        else:
+            msg = "Username not found. Try again!"            
+            return render_template('resetpassword.html', user = user, error = msg)     
+    return render_template("resetpassword.html", user = user)
     
 @app.route("/deleteuser", methods = ["POST", "GET"])
 def deleteuser():
@@ -198,15 +215,31 @@ def deleteuser():
         
         if password != "admin-delete":
             error = "Incorrect admin password"
-            return render_template("deleteuser.html", error = error)
+            return render_template("deleteuser.html", user = user, error = error)  
         
-        user_fetching_cursor = db.execute("select * from users where name = ?", [name])
-        existing_user = user_fetching_cursor.fetchone()
-        if existing_user and name != "":
+        users_cursor = db.execute("SELECT * FROM users WHERE name = ?", [name])
+        dbuser = users_cursor.fetchone()
+        
+        if not dbuser:
+            students_cursor = db.execute("SELECT * FROM students WHERE name = ?", [name])
+            db_students = students_cursor.fetchone()
+        
+        if dbuser and name != "":
             db.execute("DELETE from users where name = ?", [name])
-            db.commit()
-            session['user'] = name
-            return render_template('allusers.html', success="Users sucessfully deleted.")     
+            db.commit()        
+            msg = "User: " + user[2] +" deleted"
+            return render_template('allusers.html', success = msg, user = user) 
+        
+        elif db_students and name != "":
+            db.execute("DELETE from students where name = ?", [name])
+            db.commit()        
+            msg = "User: " + user[2] +" deleted"
+            return render_template('allusers.html', success = msg, user = user) 
+        
+        else:
+            msg = "Username not found. Try again!"            
+            return render_template('allusers.html', user = user, error = msg) 
+          
     return render_template("deleteuser.html", user = user)
 
 @app.route("/allusers", methods = ["POST", "GET"])
@@ -214,9 +247,24 @@ def allusers():
     user = get_current_user()
     db = connect_to_DB()
     show = request.form.get('role2')
+    
+    # if show == "admin" or show == "teacher":
+    #     user_cursor = db.execute("select * from users where role = ?", [show])
+    #     allusers = user_cursor.fetchall()
+    # elif show == "student":
+    #     user_cursor = db.execute("select * from students")
+    #     allusers = user_cursor.fetchall()
+    # else:
+    #     user_cursor = db.execute("select * from users where role = ?", ["admin"])
+    #     allusers = user_cursor.fetchall()
     user_cursor = db.execute("select * from users where role = ?", [show])
     allusers = user_cursor.fetchall()
-    return render_template("allusers.html", user = user, allusers = allusers)
+    all_students = ""
+    if show == "student":
+        student_cursor = db.execute("select * from students")
+        all_students = student_cursor.fetchall()
+    
+    return render_template("allusers.html", user = user, allusers = allusers, all_students = all_students)
 
 @app.route("/create_test", methods = ['GET', 'POST'])
 def create_test():
@@ -294,7 +342,6 @@ def take_test():
 
     return render_template("take_test.html", user=user, tests=tests)
 
-
 @app.route("/assign_test", methods=["POST", "GET"])
 def assign_test():
     user = get_current_user()
@@ -343,7 +390,6 @@ def assign_test():
 
     return render_template("assign_test.html", user=user, tests=tests)
 
-
 @app.route("/tests_created/<test_id>/")
 def tests_created(test_id):
     user = get_current_user()
@@ -353,7 +399,6 @@ def tests_created(test_id):
     query = db.execute("SELECT title FROM tests WHERE test_id = ?", [test_id])
     tests = query.fetchone()[0]
     return render_template("tests_created.html",  user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id)
-
 
 @app.route("/submit_test/<test_id>/", methods=["POST", "GET"])
 def submit_test(test_id): 
@@ -416,8 +461,58 @@ def view_result(test_id):
     
     return render_template("view_result.html", user = user, test_id=test_id, title=title, score=score, student_fullname=student_fullname)
 
+@app.route("/results_student", methods = ["POST", "GET"])
+def results_student():
+    user = get_current_user()
+    db = connect_to_DB()
+    
+    klass = user[4]
+    student_name = user[1]
+    student_fullname = user[2]
+    user_cursor = db.execute("SELECT * FROM completed WHERE student_name = ?", [student_name])
+    results_student = user_cursor.fetchall()
+    
+    return render_template("results_student.html", user=user, results_student=results_student, klass=klass, student_fullname = student_fullname)
 
+@app.route("/results_teacher", methods = ["POST", "GET"])
+def results_teacher():
+    user = get_current_user()
+    db = connect_to_DB()
+    klass = request.form.get('klass')
+    teacher_name = user[1]
+    teacher_fullname = user[2]
+    user_cursor = db.execute("SELECT * FROM completed WHERE teacher_name = ? AND klass = ?", [teacher_name, klass])
+    results_teacher = user_cursor.fetchall()
+    
+    if not results_teacher:
+        if klass != "None":
+            message = "No results found for "
+        else:
+            message = ""
+    else:
+        message = ""
 
+    return render_template("results_teacher.html", user=user, results_teacher=results_teacher, message=message, klass=klass, teacher_fullname = teacher_fullname)
+
+@app.route("/results_admin", methods = ["POST", "GET"])
+def results_admin():
+    user = get_current_user()
+    db = connect_to_DB()
+    klass = request.form.get('klass')
+    teacher_name = user[1]
+    teacher_fullname = user[2]
+    user_cursor = db.execute("SELECT * FROM completed WHERE teacher_name = ? AND klass = ?", [teacher_name, klass])
+    results_teacher = user_cursor.fetchall()
+    
+    if not results_teacher:
+        if klass != "None":
+            message = "No results found for "
+        else:
+            message = ""
+    else:
+        message = ""
+
+    return render_template("results_admin.html", user=user, results_teacher=results_teacher, message=message, klass=klass, teacher_fullname = teacher_fullname)
 
 @app.route("/delete_test", methods = ["POST", "GET"])
 def delete_test():
