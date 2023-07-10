@@ -277,21 +277,22 @@ def create_test():
         
         conn = getDatabase()
         test_title = request.form.get('quiz_title')
-
-        # conn.execute('INSERT INTO tests (title, teacher_name) VALUES (?, ?)',
-        #              (test_title, teacher_name))
-        # conn.commit()        
-        # db = getDatabase()
-        conn.execute('INSERT INTO tests (title, teacher_name, assigned_test, assigned_klass) VALUES (?, ?, ?, ?)',
-                     (test_title, teacher_name, 0, "Not Assigned"))
-        # conn.commit()
+        
+        conn.execute('INSERT INTO tests (title, teacher_name, assigned_test, assigned_klass, test_id) VALUES (?, ?, ?, ?, ?)',
+                     (test_title, teacher_name, 0, "Not Assigned", 0))
+        
+        test_id = conn.execute('SELECT id FROM tests WHERE title = ? AND teacher_name = ?',
+                               (test_title, teacher_name)).fetchone()[0]
+        
+        conn.execute(
+            "UPDATE tests SET test_id = ? WHERE id = ?",
+            [test_id, test_id]
+        )
+        conn.commit()
         
         # Get the test_teacher of the newly created test
         test_teacher = conn.execute('SELECT teacher_name FROM tests WHERE title = ? AND teacher_name = ?', 
                                     (test_title, teacher_name)).fetchone()[0]
-        test_id = conn.execute('SELECT id FROM tests WHERE title = ? AND teacher_name = ?',
-                               (test_title, teacher_name)).fetchone()[0]
-        
                 
         csv_file = request.files['csv_file']
         upload_folder = app.config['UPLOAD_FOLDER']
@@ -337,10 +338,22 @@ def take_test():
     db = connect_to_DB()
 
     klass = user["klass"] 
-    query = db.execute("SELECT * FROM tests WHERE assigned_klass = ?", [klass])
+    query = db.execute("SELECT * FROM tests WHERE assigned_klass = ? AND assigned_test = 1", [klass])
     tests = query.fetchall()
 
     return render_template("take_test.html", user=user, tests=tests)
+
+@app.route("/tests_given", methods=["POST", "GET"])
+def tests_given():
+    user = get_current_user()
+    db = connect_to_DB()
+
+    klass = user["klass"] 
+    query = db.execute("SELECT * FROM tests WHERE assigned_klass = ? AND assigned_test = 2", [klass])
+    tests = query.fetchall()
+
+    return render_template("tests_given.html", user=user, tests=tests)
+
 
 @app.route("/assign_test", methods=["POST", "GET"])
 def assign_test():
@@ -398,6 +411,21 @@ def tests_created(test_id):
     quiz_questions = quiz_cursor.fetchall()
     query = db.execute("SELECT title FROM tests WHERE test_id = ?", [test_id])
     tests = query.fetchone()[0]
+    
+    query = db.execute("SELECT assigned_klass FROM tests WHERE test_id = ?", [test_id])
+    
+    result = query.fetchone()
+    student_name = user[1]
+    klass = result[0]
+    
+    query = db.execute("SELECT * FROM completed WHERE student_name = ? AND klass = ? AND test_id = ?",
+                    [student_name, klass, test_id])
+    existing_test = query.fetchone()
+
+    if existing_test:
+        score = existing_test["score"]
+        return render_template("tests_created.html", user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, score=score, test_taken = True)
+    
     return render_template("tests_created.html",  user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id)
 
 @app.route("/submit_test/<test_id>/", methods=["POST", "GET"])
@@ -443,10 +471,14 @@ def submit_test(test_id):
     if student_name != teacher_name:
         db.execute("INSERT INTO completed (student_name, student_fullname, klass, test_id, title, score, teacher_name, teacher_fullname) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [student_name, student_fullname, klass, test_id, title, score, teacher_name, teacher_fullname])
-        db.commit()
+        
+        db.execute(
+            "UPDATE tests SET assigned_test = 2 WHERE id = ?",
+            [test_id]
+        )
+        db.commit()      
 	
     return redirect(url_for("view_result", user=user, test_id=test_id, total = total, score = score))
-    # return render_template("view_result", test_id=test_id, total = total, score = score)
 
 @app.route("/view_result/<test_id>/", methods=["POST", "GET"])
 def view_result(test_id):
@@ -537,6 +569,14 @@ def delete_test():
 def logout():
     session.pop('user', None)
     return redirect(url_for('index'))
+
+# Error handler for TypeError
+@app.errorhandler(TypeError)
+def handle_type_error(error):
+    # Redirect to the login page
+    error = "You are not logged in! "
+    # return redirect(url_for('login'), error = error)
+    return render_template("login.html", error = error)
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = 'questions' # Define the upload directory

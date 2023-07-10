@@ -32,7 +32,12 @@
             </div>
             <br>
             {% endfor %}
-            <button type="submit" class="btn btn-primary">Submit</button>
+            {% if test_taken %}
+                <button type="button" class="btn btn-primary" disabled>Test Already Taken</button>
+                <p>Score: {{ score }}</p>
+            {% else %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            {% endif %}
         </form>
         
   </div>
