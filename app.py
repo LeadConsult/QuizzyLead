@@ -306,7 +306,6 @@ def create_test():
         file_path = os.path.join(upload_folder, filename)
         csv_file.save(file_path)
         
-        
         with open(file_path) as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
