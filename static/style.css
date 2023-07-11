@@ -3,6 +3,11 @@ body{
     margin-top: 80px;
 }
 
+.no-underline-left {
+  text-decoration: none;
+  text-align: left;
+}
+
 .table-hover tbody tr:hover td {
     color: yellow;
   }
