@@ -319,7 +319,10 @@ def create_test():
                     conn.commit()
                  
                 else:
-                     return render_template("create_test.html", user = user,  error = "CSV header error. Download \"sample.csv\" to confirm")
+                    conn.execute('DELETE FROM tests WHERE title = ? AND teacher_name = ? AND test_id = ?', (test_title, teacher_name, test_id))
+                    conn.commit()
+
+                    return render_template("create_test.html", user = user,  error = "CSV header error. Download \"sample.csv\" to confirm")
                  
         return render_template("create_test.html", user = user,  success = "Questions successfully uploaded")
     return render_template("create_test.html", user = user, sample_csv_url=sample_csv_url)
