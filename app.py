@@ -266,24 +266,17 @@ def create_test():
         
         conn = getDatabase()
         test_title = request.form.get('quiz_title')
-        
-        
+       
         conn.execute('INSERT INTO tests (title, teacher_name, assigned_test, assigned_klass, test_id) VALUES (?, ?, ?, ?, ?)',
                      (test_title, teacher_name, 0, "Not Assigned", 0))
-        print(test_title, teacher_name, 0, "Not Assigned", 0)
         
         test_id = conn.execute('SELECT id FROM tests WHERE title = ? AND teacher_name = ?',
                                (test_title, teacher_name)).fetchone()[0]
-        print(test_title, teacher_name)
         
         conn.execute(
             "UPDATE tests SET test_id = ? WHERE id = ?",
             [test_id, test_id]
         )
-        
-        print(test_id)
-        if test_id != 0:
-            conn.commit()
         
         # Get the test_teacher of the newly created test
         test_teacher = conn.execute('SELECT teacher_name FROM tests WHERE title = ? AND teacher_name = ?', 
@@ -297,10 +290,13 @@ def create_test():
         # Save the file to the upload folder
         filename = secure_filename(csv_file.filename)
         if not csv_file.filename.endswith('.csv'):
+            conn.execute('DELETE FROM tests WHERE title = ? AND teacher_name = ? AND test_id = ?', (test_title, teacher_name, test_id))
+            conn.commit()
+                    
             return render_template("create_test.html", user = user,  error = "Error: Only CSV files are allowed.")
+                
         file_path = os.path.join(upload_folder, filename)
-        csv_file.save(file_path)
-        
+        csv_file.save(file_path)        
         with open(file_path) as csvfile:
             reader = csv.DictReader(csvfile)
             expected_columns = ['qnumber', 'question', 'option1', 'option2', 'option3', 'option4', 'answer']
