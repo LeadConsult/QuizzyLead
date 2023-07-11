@@ -19,7 +19,12 @@
             <thead>
               <tr>
                 <th scope="col">
-                  <h3>Take your tests</h3>
+                  {% if tests %}
+                    <h3 style="color: yellow">Take your tests</h3>
+                  {% else %}
+                    <h3 style="text-align: center; color: yellow"> No assigned Test Yet <br> Enjoy the silence!!</h3>
+                  {% endif %} 
+                  
                 </th>
               </tr>
             </thead>
@@ -38,8 +43,7 @@
               </tr>
               {% endfor %}
             </tbody>
-          </table>
-          
+          </table>          
         </div>    
     
     

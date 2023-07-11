@@ -19,7 +19,13 @@
             <thead>
               <tr>
                 <th scope="col">
-                  <h3>View past tests</h3>
+
+                {% if tests %}
+                  <h3 style="color: yellow">View past tests</h3>
+                {% else %}
+                  <h3 style="text-align: center; color: yellow"> No record found</h3>
+                {% endif %} 
+
                 </th>
               </tr>
             </thead>
@@ -39,7 +45,7 @@
               {% endfor %}
             </tbody>
           </table>
-          
+
         </div>    
     
     

@@ -15,7 +15,7 @@
         </div>
 
         <div class="question container border text-light p-3">
-          <h3>{{ tests }}</h3>
+          <h3 style="color: yellow;">{{ tests }}</h3>
           <br>
           <form action="/submit_test/{{ test_id }}/" method="POST">
             {% for question in quiz_questions %}
@@ -27,7 +27,16 @@
                     <input type="radio" name="q{{ question[0] }}" value="A">&nbsp&nbsp&nbsp A) {{ question[5] }} <br>
                     <input type="radio" name="q{{ question[0] }}" value="B">&nbsp&nbsp&nbsp B) {{ question[6] }} <br>
                     <input type="radio" name="q{{ question[0] }}" value="C">&nbsp&nbsp&nbsp C) {{ question[7] }} <br>
-                    <input type="radio" name="q{{ question[0] }}" value="D">&nbsp&nbsp&nbsp D) {{ question[8] }} <br>
+                    <input type="radio" name="q{{ question[0] }}" value="D">&nbsp&nbsp&nbsp D) {{ question[8] }} 
+                </div>
+
+                <div class="card-body">
+                  {% if test_taken or teacher %}
+                      <p class="text-danger">                   
+                        Correct Answer: {{ question[9] }} <br>
+                        Explanation: {{ question[10] }}
+                      </p>
+                  {% endif %}
                 </div>
             </div>
             <br>
@@ -35,9 +44,13 @@
 
             {% if test_taken %}
             <div class="d-grid gap-2">
-                <button type="button" class="btn btn-primary" disabled>Test Already Taken</button>
-                <p style="text-align: center;">Score: {{ score }}</p>
-            </div>
+                <button type="button" class="btn btn-warning" disabled>Test Already Taken</button>
+                <p style="text-align: center;">
+                  Score: {{ score }} <br>
+                  Total: {{ total }} <br>
+                  Percent: {{ (score/total)*100 }}
+                </p>
+              </div>
 
             {% elif teacher %}
             <div class="d-grid gap-2">

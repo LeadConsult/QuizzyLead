@@ -299,7 +299,7 @@ def create_test():
         csv_file.save(file_path)        
         with open(file_path) as csvfile:
             reader = csv.DictReader(csvfile)
-            expected_columns = ['qnumber', 'question', 'option1', 'option2', 'option3', 'option4', 'answer']
+            expected_columns = ['qnumber', 'question', 'option1', 'option2', 'option3', 'option4', 'answer', 'explanation']
             for row in reader:
                 if all(column in row for column in expected_columns):
                     qnumber = row['qnumber']
@@ -308,10 +308,13 @@ def create_test():
                     option2 = row['option2']
                     option3 = row['option3']
                     option4 = row['option4']
-                    answer = row['answer']  
+                    answer = row['answer'] 
+                    explanation = row['explanation'] 
                                      
-                    query = f"INSERT INTO questions (test_id, test_teacher, qnumber, question, option1, option2, option3, option4, answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                    conn.execute(query, (test_id, test_teacher, qnumber, question, option1, option2, option3, option4, answer))
+                    query = f"INSERT INTO questions (test_id, test_teacher, qnumber, question, option1, option2, option3, option4, answer, explanation) \
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                        
+                    conn.execute(query, (test_id, test_teacher, qnumber, question, option1, option2, option3, option4, answer, explanation))
                     conn.commit()
                  
                 else:
@@ -321,6 +324,7 @@ def create_test():
                     return render_template("create_test.html", user = user,  error = "CSV header error. Download \"sample.csv\" to confirm")
                  
         return render_template("create_test.html", user = user,  success = "Questions successfully uploaded")
+    
     return render_template("create_test.html", user = user, sample_csv_url=sample_csv_url)
 
 @app.route("/viewquiz",  methods = ["POST", "GET"])
@@ -340,6 +344,11 @@ def take_test():
     klass = user["klass"] 
     query = db.execute("SELECT * FROM tests WHERE assigned_klass = ? AND assigned_test = 1", [klass])
     tests = query.fetchall()
+    
+    if tests:
+        print('yy')
+    else:
+        print('N')
 
     return render_template("take_test.html", user=user, tests=tests)
 
@@ -348,12 +357,11 @@ def tests_given():
     user = get_current_user()
     db = connect_to_DB()
 
-    klass = user["klass"] 
-    query = db.execute("SELECT * FROM tests WHERE assigned_klass = ? AND assigned_test = 2", [klass])
+    student_name = user[1] 
+    query = db.execute("SELECT * FROM completed WHERE student_name = ?", [student_name])
     tests = query.fetchall()
 
     return render_template("tests_given.html", user=user, tests=tests)
-
 
 @app.route("/assign_test", methods=["POST", "GET"])
 def assign_test():
@@ -434,7 +442,9 @@ def tests_created(test_id):
 
     if existing_test:
         score = existing_test["score"]
-        return render_template("tests_created.html", user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, score=score, test_taken = True)
+        total = existing_test["total"]
+        
+        return render_template("tests_created.html", user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, score=score, total= total, test_taken = True)
     
     db.close()
     return render_template("tests_created.html",  user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id)
@@ -480,8 +490,8 @@ def submit_test(test_id):
     teacher_fullname = query_teacher.fetchone()[0]
     
     if student_name != teacher_name:
-        db.execute("INSERT INTO completed (student_name, student_fullname, klass, test_id, title, score, teacher_name, teacher_fullname) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                [student_name, student_fullname, klass, test_id, title, score, teacher_name, teacher_fullname])
+        db.execute("INSERT INTO completed (student_name, student_fullname, klass, test_id, title, score, total, teacher_name, teacher_fullname) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [student_name, student_fullname, klass, test_id, title, score, total, teacher_name, teacher_fullname])
         
         db.execute(
             "UPDATE tests SET assigned_test = 2 WHERE id = ?",
@@ -521,21 +531,30 @@ def results_student():
 def results_teacher():
     user = get_current_user()
     db = connect_to_DB()
-    klass = request.form.get('klass')
+    teacher_name = user[1]
+    query = db.execute("SELECT * FROM completed WHERE test_id != 0 AND teacher_name = ?", [teacher_name])
+    tests = query.fetchall()
+    return render_template("results_teacher.html", user = user, tests = tests)
+
+@app.route("/view_std_result/<test_id>/")
+def view_std_result(test_id):
+    user = get_current_user()
+    db = connect_to_DB()
+    
     teacher_name = user[1]
     teacher_fullname = user[2]
-    user_cursor = db.execute("SELECT * FROM completed WHERE teacher_name = ? AND klass = ?", [teacher_name, klass])
-    results_teacher = user_cursor.fetchall()
     
-    if not results_teacher:
-        if klass != "None":
-            message = "No results found for "
-        else:
-            message = ""
-    else:
-        message = ""
+    query = db.execute("SELECT * FROM completed WHERE test_id = ? AND teacher_name = ?", [test_id, teacher_name])
+    results_student = query.fetchall()
+    
+    details = db.execute("SELECT title, assigned_klass FROM tests WHERE test_id = ? AND teacher_name = ?", [test_id, teacher_name])
+    results_details = details.fetchone()
+    
+    title = results_details['title']
+    assigned_klass = results_details['assigned_klass']
+   
+    return render_template("view_std_result.html", user=user, results_student =results_student, teacher_fullname= teacher_fullname, title = title, klass = assigned_klass)
 
-    return render_template("results_teacher.html", user=user, results_teacher=results_teacher, message=message, klass=klass, teacher_fullname = teacher_fullname)
 
 @app.route("/results_admin", methods = ["POST", "GET"])
 def results_admin():
@@ -584,10 +603,11 @@ def logout():
 # Error handler for TypeError
 @app.errorhandler(TypeError)
 def handle_type_error(error):
+    print(error)
     # Redirect to the login page
-    error = "You are not logged in! "
+    msg = "You are not logged in! "
     # return redirect(url_for('login'), error = error)
-    return render_template("login.html", error = error)
+    return render_template("login.html", error = msg)
 
 if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'questions')
