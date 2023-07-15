@@ -172,4 +172,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
+- ALX and MasterCard for the opportunity.
+- My wife for supporting me and encouraged me to keep going and persit till the end.
 - Thank you to the creators and contributors of the libraries and frameworks used in this project.
