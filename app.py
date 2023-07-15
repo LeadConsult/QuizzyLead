@@ -5,21 +5,6 @@ from werkzeug.utils import secure_filename
 import os
 import csv
 
-# import sqlite3
-# from flask_sqlalchemy import SQLAlchemy
-
-# db = SQLAlchemy()
-
-# def trace_callback(statement):
-#     print("SQL statement:", statement)
-
-# # Enable tracing
-# sqlite3.enable_callback_tracebacks(True)
-# sqlite3.trace_callback = trace_callback
-
-# # Connect to the database and execute operations
-# conn = sqlite3.connect("app_database.db")
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -34,6 +19,7 @@ def get_current_user():
     if 'user' in session:
         user = session['user']
         db = getDatabase()
+        
         # Check in "students" table
         student_cursor = db.execute("SELECT * FROM students WHERE name = ?", [user])
         student_result = student_cursor.fetchone()
@@ -45,18 +31,6 @@ def get_current_user():
             user_result = user_cursor.fetchone()
     return user_result
 
-
-# def login_required(role):
-#     def wrapper(fn):
-#         @wraps(fn)
-#         def decorated_view(*args, **kwargs):
-#             if not current_user.is_authenticated:
-#                 return current_app.login_manager.unauthorized()
-#             if not current_user.has_role(role):
-#                 abort(403)
-#             return fn(*args, **kwargs)
-#         return decorated_view
-#     return wrapper
 
 @app.route("/")
 def index():
@@ -345,11 +319,6 @@ def take_test():
     query = db.execute("SELECT * FROM tests WHERE assigned_klass = ? AND assigned_test = 1", [klass])
     tests = query.fetchall()
     
-    if tests:
-        print('yy')
-    else:
-        print('N')
-
     return render_template("take_test.html", user=user, tests=tests)
 
 @app.route("/tests_given", methods=["POST", "GET"])
