@@ -93,30 +93,7 @@ The QuizzyLead project follows the following file structure:
 ```
 QuizzyLead/
 ├── questions/
-│   ├── English_2023_pry_one.csv
-│   ├── General_2023_pry_one.csv
-│   ├── Maths_2023_pry_one.csv
-│   ├── sample_2.csv
-│   └── sample_3.csv
 ├── static/
-│   ├── assets/
-│   │   ├── favicon.ico
-│   │   └── img/
-│   │       ├── about-video.jpg
-│   │       ├── background.jpg
-│   │       ├── ee1.png
-│   │       ├── google-play-badge.svg
-│   │       ├── portrait_black.png
-│   │       ├── app-store-badge.svg
-│   │       ├── demo-screen.mp4
-│   │       ├── ee2.png
-│   │       ├── hero-bg.jpg
-│   │       ├── quiz.jpg
-│   │       ├── apple-touch-icon.png
-│   │       ├── e12.png
-│   │       ├── favicon.png
-│   │       ├── home.png
-│   │       ├── tnw-logo.svg
 │   ├── css/
 │   │   └── styles.css
 │   ├── img/
@@ -141,7 +118,6 @@ QuizzyLead/
 │   ├── results_student.html
 │   ├── tests_given.html
 │   ├── dashboard.html
-│   ├── index2.html
 │   ├── register_student.html
 │   ├── results_teacher.html
 │   └── view_result.html
