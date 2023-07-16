@@ -344,7 +344,7 @@ def assign_test():
         test_id = request.form.get("test_id")
         test_teacher = request.form.get("test_teacher")
         klass = request.form.get("klass")
-        
+
         if klass == "select":
             error = "Please select a class."
             return render_template("assign_test.html", user=user, tests=tests, error=error)
@@ -360,25 +360,40 @@ def assign_test():
             error = "Test is already assigned to the class"
             return render_template("assign_test.html", user=user, tests=tests, error=error)
 
-        # Assign the test to the class
-        db.execute(
-            "INSERT INTO assigned_tests (test_id, test_teacher, klass) VALUES (?, ?, ?)",
-            [test_id, test_teacher, klass],
-        )
-        db.commit()
+        if request.form.get("cancel") == "cancel":
+            # Cancel the assigned test
+            db.execute(
+                "DELETE FROM assigned_tests WHERE test_id = ? AND test_teacher = ? AND klass = ?",
+                [test_id, test_teacher, klass],
+            )
+            db.commit()
 
-        # Update the assigned_test attribute of the test in the tests table
-        db.execute(
-            "UPDATE tests SET assigned_test = 1, assigned_klass = ?, test_id = ? WHERE id = ?",
-            [klass, test_id, test_id],
-        )
-        db.commit()
+            # Update the assigned_test attribute of the test in the tests table
+            db.execute(
+                "UPDATE tests SET assigned_test = 0, assigned_klass = 0 WHERE id = ?",
+                [test_id],
+            )
+            db.commit()
 
-        # Redirect to a success page or perform any additional actions
-        # msg = "Test is assigned to the class"
+        else:
+            # Assign the test to the class
+            db.execute(
+                "INSERT INTO assigned_tests (test_id, test_teacher, klass) VALUES (?, ?, ?)",
+                [test_id, test_teacher, klass],
+            )
+            db.commit()
+
+            # Update the assigned_test attribute of the test in the tests table
+            db.execute(
+                "UPDATE tests SET assigned_test = 1, assigned_klass = ? WHERE id = ?",
+                [klass, test_id],
+            )
+            db.commit()
+
         return redirect(url_for("assign_test"))
 
     return render_template("assign_test.html", user=user, tests=tests)
+
 
 @app.route("/tests_created/<test_id>/")
 def tests_created(test_id):

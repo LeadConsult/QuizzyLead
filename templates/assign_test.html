@@ -30,38 +30,40 @@
         </thead>
         <tbody>
             {% for test in tests %}
-            <tr class="text-light">
-                <td>
-                    <div class="d-grid gap-2">
-                        <h3>{{ test.title }}</h3>
-                        <form method="POST" action="{{ url_for('assign_test') }}">
-                            <input type="hidden" name="test_id" value="{{ test.id }}">
-                            <input type="hidden" name="test_teacher" value="{{ test.teacher_name }}">
-                            <label for="klass">Class:</label>
-                            <select name="klass" id="klass" class="custom-select">
-                                <option value="select">select</option>
-                                <option value="KG1">KG1</option>
-                                <option value="KG2">KG2</option>
-                                <option value="NUR1">Nursery 1</option>
-                                <option value="NUR2">Nursery 2</option>
-                                <option value="PRY1">Primary 1</option>
-                                <option value="PRY2">Primary 2</option>
-                                <option value="PRY3">Primary 3</option>
-                                <option value="PRY4">Primary 4</option>
-                                <option value="PRY5">Primary 5</option>
-                                <option value="PRY6">Primary 6</option>
-                            </select>
-                            <button class="btn btn-outline-dark" type="submit" {% if test.assigned_test %}disabled{% endif %} style="color: white">
+                <tr class="text-light">
+                    <td>
+                        <div class="d-grid gap-2">
+                            <h3>{{ test.title }}</h3>
+                            <form method="POST" action="{{ url_for('assign_test') }}">
+                                <input type="hidden" name="test_id" value="{{ test.id }}">
+                                <input type="hidden" name="test_teacher" value="{{ test.teacher_name }}">
+                                <label for="klass">Class:</label>
+                                <select name="klass" id="klass" class="custom-select" {% if test.assigned_test %}disabled{% endif %}>
+                                    <option value="select">select</option>
+                                    <option value="KG1">KG1</option>
+                                    <option value="KG2">KG2</option>
+                                    <option value="NUR1">Nursery 1</option>
+                                    <option value="NUR2">Nursery 2</option>
+                                    <option value="PRY1">Primary 1</option>
+                                    <option value="PRY2">Primary 2</option>
+                                    <option value="PRY3">Primary 3</option>
+                                    <option value="PRY4">Primary 4</option>
+                                    <option value="PRY5">Primary 5</option>
+                                    <option value="PRY6">Primary 6</option>
+                                </select>
                                 {% if test.assigned_test %}
-                                Test Assigned to {{ test.assigned_klass }}
+                                    <button class="btn btn-danger" type="submit" name="cancel" value="cancel" style="color: white">
+                                        Test Assigned to {{ test.assigned_klass }} (Click to Cancel)
+                                    </button>
                                 {% else %}
-                                Assign
+                                    <button class="btn btn-outline-dark" type="submit" style="color: white">
+                                        Assign
+                                    </button>
                                 {% endif %}
-                            </button>
-                        </form>                       
-                    </div>
-                </td>
-            </tr>
+                            </form>                        
+                        </div>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
