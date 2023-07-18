@@ -59,3 +59,25 @@ transform: scale(1.05);
   .card:hover .card-content {
     opacity: 1;
   }
+
+  .radio-label {
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #f8f9fa; /* Set the default background color to gray */
+}
+
+.radio-label:nth-child(even) {
+    background-color: #ffffff; /* Set the background color to white for even-numbered elements */
+}
+
+.radio-label.correct {
+  outline: 2px solid green;
+  background-color: aqua;
+}
+
+.radio-label.wrong {
+  outline: 2px solid red;
+  background-color: darkorange;
+}

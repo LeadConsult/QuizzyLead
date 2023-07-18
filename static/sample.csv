@@ -1,4 +1,4 @@
-qnumber,question,option1,option2,option3,option4,answer,explanation
+qnumber,question,optionA,optionB,optionC,optionD,answer,explanation
 1,This is the question1,correct,incorrect,incorrect,incorrect,A,option1
 2,This is the question2,FALSE,TRUE,none of the above,all of the above,B,option2
 3,___ is the question3,incorrect,incorrect,correct,incorrect,C,option3

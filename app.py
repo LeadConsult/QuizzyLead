@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import csv
+import json
 
 
 app = Flask(__name__)
@@ -273,22 +274,22 @@ def create_test():
         csv_file.save(file_path)        
         with open(file_path) as csvfile:
             reader = csv.DictReader(csvfile)
-            expected_columns = ['qnumber', 'question', 'option1', 'option2', 'option3', 'option4', 'answer', 'explanation']
+            expected_columns = ['qnumber', 'question', 'optionA', 'optionB', 'optionC', 'optionD', 'answer', 'explanation']
             for row in reader:
                 if all(column in row for column in expected_columns):
                     qnumber = row['qnumber']
                     question = row['question']
-                    option1 = row['option1']
-                    option2 = row['option2']
-                    option3 = row['option3']
-                    option4 = row['option4']
+                    optionA = row['optionA']
+                    optionB = row['optionB']
+                    optionC = row['optionC']
+                    optionD = row['optionD']
                     answer = row['answer'] 
                     explanation = row['explanation'] 
                                      
-                    query = f"INSERT INTO questions (test_id, test_teacher, qnumber, question, option1, option2, option3, option4, answer, explanation) \
+                    query = f"INSERT INTO questions (test_id, test_teacher, qnumber, question, optionA, optionB, optionC, optionD, answer, explanation) \
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                         
-                    conn.execute(query, (test_id, test_teacher, qnumber, question, option1, option2, option3, option4, answer, explanation))
+                    conn.execute(query, (test_id, test_teacher, qnumber, question, optionA, optionB, optionC, optionD, answer, explanation))
                     conn.commit()
                  
                 else:
@@ -363,14 +364,14 @@ def assign_test():
         if request.form.get("cancel") == "cancel":
             # Cancel the assigned test
             db.execute(
-                "DELETE FROM assigned_tests WHERE test_id = ? AND test_teacher = ? AND klass = ?",
-                [test_id, test_teacher, klass],
+                "DELETE FROM assigned_tests WHERE test_id = ?" ,
+                [test_id],
             )
             db.commit()
 
             # Update the assigned_test attribute of the test in the tests table
             db.execute(
-                "UPDATE tests SET assigned_test = 0, assigned_klass = 0 WHERE id = ?",
+                "UPDATE tests SET assigned_test = 0, assigned_klass = 'Not Assigned' WHERE id = ?",
                 [test_id],
             )
             db.commit()
@@ -400,6 +401,9 @@ def tests_created(test_id):
     user = get_current_user()
     db = connect_to_DB()
     
+    #student_name check for both teacher and students
+    student_name = user[1]
+    
     quiz_cursor = db.execute(f"SELECT * FROM questions where test_id = ?", [test_id])
     quiz_questions = quiz_cursor.fetchall()
     
@@ -407,18 +411,30 @@ def tests_created(test_id):
     tests = query.fetchone()[0]
     
     query = db.execute("SELECT assigned_klass FROM tests WHERE test_id = ?", [test_id])
+    result = query.fetchone()    
+    klass = result[0]
+    
+    # Retrieve the selected_answers for the student
+    query = db.execute("SELECT selections FROM selected_answers WHERE student_name = ? AND test_id = ?", [student_name, test_id])
     result = query.fetchone()
     
-    #student_name check for both teacher and students
-    student_name = user[1]
-    klass = result[0]
+    if result is not None:
+        selections_string = result[0] 
+        
+        # Convert the selections string back to a dictionary
+        user_selections = json.loads(selections_string)
+    else:
+        # Handle the case when the selections are not found
+        user_selections = {}
+   
+    print(user_selections)
     
     # Check if the current user is a teacher
     chk = db.execute("SELECT name FROM users WHERE name = ?", (student_name,))
     teacher = chk.fetchone()
     
     if teacher:
-        return render_template("tests_created.html", user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, teacher = True)
+        return render_template("tests_created.html", user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, teacher = True, user_selections=user_selections)
     
     query = db.execute("SELECT * FROM completed WHERE student_name = ? AND klass = ? AND test_id = ?",
                     [student_name, klass, test_id])
@@ -428,32 +444,53 @@ def tests_created(test_id):
         score = existing_test["score"]
         total = existing_test["total"]
         
-        return render_template("tests_created.html", user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, score=score, total= total, test_taken = True)
+        return render_template("tests_created.html", user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, score=score, total= total, test_taken = True, user_selections=user_selections)
     
     db.close()
-    return render_template("tests_created.html",  user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id)
+    
+    return render_template("tests_created.html",  user = user, quiz_questions = quiz_questions, tests = tests, test_id = test_id, user_selections=user_selections)
 
 @app.route("/submit_test/<test_id>/", methods=["POST", "GET"])
 def submit_test(test_id): 
     user = get_current_user()
     db = connect_to_DB()
+    student_name = user[1]
+    student_fullname = user[2]
+    klass = user[4]
+   
+    # Retrieve the total count of questions for the test_id
+    query = db.execute("SELECT COUNT(*) FROM questions WHERE test_id = ?", [test_id])
+    total = query.fetchone()[0]
+
     # Retrieve the submitted answers from the form
     submitted_answers = {}
+
+    # Create a dictionary to store the user's selections
+    user_selections = {}
+
     for key, value in request.form.items():
         if key.startswith('q'):
             question_id = int(key[1:])
-            submitted_answers[question_id] = value  
-            # Store the answer as a string
+            submitted_answers[question_id] = value  # Store the answer as a string
+
+            # Store the user's selection in the dictionary
+            user_selections[question_id] = value
+
+    # Convert the user_selections dictionary to a string or JSON format
+    selections_string = json.dumps(user_selections)  # JSON format
+
+    # Store the user's selections in the database in a single row
+    db.execute(
+        "INSERT INTO selected_answers (student_name, student_fullname, klass, test_id, selections) VALUES (?, ?, ?, ?, ?)",
+        (student_name, student_fullname, klass, test_id, selections_string)
+    )
+    db.commit()
 
     # Retrieve the correct answers from the database
     query = db.execute("SELECT id, answer FROM questions WHERE test_id = ?", [test_id])
     # Store the answer as a string
     correct_answers = {row[0]: row[1] for row in query.fetchall()}  
     
-    # Retrieve the total count of questions for the test_id
-    query = db.execute("SELECT COUNT(*) FROM questions WHERE test_id = ?", [test_id])
-    total = query.fetchone()[0]
-
     # Compare submitted answers with correct answers and calculate the score
     score = 0
     for question_id, submitted_answer in submitted_answers.items():
@@ -463,9 +500,6 @@ def submit_test(test_id):
     query = db.execute("SELECT title, teacher_name, assigned_klass FROM tests WHERE test_id = ?", [test_id])
     result = query.fetchone()
     
-    student_name = user[1]
-    student_fullname = user[2]
-    klass = result[2]
     test_id = test_id
     title = result[0]
     score = score
@@ -481,7 +515,7 @@ def submit_test(test_id):
             "UPDATE tests SET assigned_test = 2 WHERE id = ?",
             [test_id]
         )
-        db.commit()      
+        db.commit()              
 	
     return redirect(url_for("view_result", user=user, test_id=test_id, total = total, score = score))
 
@@ -489,14 +523,15 @@ def submit_test(test_id):
 def view_result(test_id):
     user = get_current_user()
     db = connect_to_DB()
-    query = db.execute("SELECT title, score, student_fullname FROM completed WHERE test_id = ?", [test_id])
+    query = db.execute("SELECT title, score, total, student_fullname FROM completed WHERE test_id = ?", [test_id])
     result = query.fetchone()
     
     title = result[0]
     score = result[1]
-    student_fullname = result[2]
+    total = result[2]
+    student_fullname = result[3]
     
-    return render_template("view_result.html", user = user, test_id=test_id, title=title, score=score, student_fullname=student_fullname)
+    return render_template("view_result.html", user = user, test_id=test_id, title=title, score=score, total=total, student_fullname=student_fullname)
 
 @app.route("/results_student", methods = ["POST", "GET"])
 def results_student():
