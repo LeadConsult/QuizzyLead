@@ -48,7 +48,7 @@
                       <td>{{ eachuser['teacher_fullname'] }}</td>
                       <td>{{ eachuser['score'] }}</td>
                       <td>{{ eachuser['total'] }}</td>
-                      <td>{{ ((eachuser['score'])/(eachuser['total']))*100 }}
+                      <td>{{ "{:.1f}".format(((eachuser['score'])/(eachuser['total'])) * 100) }}
                     </tr>
                   </tbody> 
                   {% endfor %}

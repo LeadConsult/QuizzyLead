@@ -426,8 +426,6 @@ def tests_created(test_id):
     else:
         # Handle the case when the selections are not found
         user_selections = {}
-   
-    print(user_selections)
     
     # Check if the current user is a teacher
     chk = db.execute("SELECT name FROM users WHERE name = ?", (student_name,))

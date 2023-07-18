@@ -20,47 +20,51 @@
           
           <form action="/submit_test/{{ test_id }}/" method="POST">
             
-            {% for question in quiz_questions %}            
+            {% for question in quiz_questions %}
               {% set number = question[0] | string %}
+              {% set A = question[5] %}
+              {% set B = question[6] %}
+              {% set C = question[7] %}
+              {% set D = question[8] %}
               
-                <div class="card">
-                    <div class="card-header text-dark">
-                        <h4>Q{{ question[3] }}: {{ question[4] }}</h4> 
-                    </div>
-
-                    <div class="card-body text-dark">
-                      <label class="radio-label {% if user_selections[number] == 'A' and user_selections[number] == question[9] %}correct{% elif user_selections[number] == 'A' and user_selections[number] != question[9] %}wrong{% endif %}">
-                        <input type="radio" name="q{{ question[0] }}" value="A" {% if user_selections[number] == 'A' %}checked{% endif %}>
-                          A) {{ question[5] }}
+              <div class="card">
+                  <div class="card-header text-dark">
+                      <h4>Q{{ question[3] }}: {{ question[4] }}</h4> 
+                  </div>
+                  <div class="card-body text-dark">
+                      <label class="radio-label {% if user_selections[number] == A and user_selections[number] == question[9] %}correct{% elif user_selections[number] == A and user_selections[number] != question[9] %}wrong{% endif %}">
+                          <input type="radio" name="q{{ question[0] }}" value="{{ A }}" {% if user_selections[number] == A %}checked{% endif %}>
+                          A) {{ A }}
                       </label>
-                  
-                      <label class="radio-label {% if user_selections[number] == 'B' and user_selections[number] == question[9] %}correct{% elif user_selections[number] == 'B' and user_selections[number] != question[9] %}wrong{% endif %}">
-                          <input type="radio" name="q{{ question[0] }}" value="B" {% if user_selections[number] == 'B' %}checked{% endif %}>
-                          B) {{ question[6] }}
+                      
+                      <label class="radio-label {% if user_selections[number] == B and user_selections[number] == question[9] %}correct{% elif user_selections[number] == B and user_selections[number] != question[9] %}wrong{% endif %}">
+                          <input type="radio" name="q{{ question[0] }}" value="{{ B }}" {% if user_selections[number] == B %}checked{% endif %}>
+                          B) {{ B }}
                       </label>
-                  
-                      <label class="radio-label {% if user_selections[number] == 'C' and user_selections[number] == question[9] %}correct{% elif user_selections[number] == 'C' and user_selections[number] != question[9] %}wrong{% endif %}">
-                          <input type="radio" name="q{{ question[0] }}" value="C" {% if user_selections[number] == 'C' %}checked{% endif %}>
-                          C) {{ question[7] }}
+                      
+                      <label class="radio-label {% if user_selections[number] == C and user_selections[number] == question[9] %}correct{% elif user_selections[number] == C and user_selections[number] != question[9] %}wrong{% endif %}">
+                          <input type="radio" name="q{{ question[0] }}" value="{{ C }}" {% if user_selections[number] == C %}checked{% endif %}>
+                          C) {{ C }}
                       </label>
-                  
-                      <label class="radio-label {% if user_selections[number] == 'D' and user_selections[number] == question[9] %}correct{% elif user_selections[number] == 'D' and user_selections[number] != question[9] %}wrong{% endif %}">
-                          <input type="radio" name="q{{ question[0] }}" value="D" {% if user_selections[number] == 'D' %}checked{% endif %}>
-                          D) {{ question[8] }}
+                      
+                      <label class="radio-label {% if user_selections[number] == D and user_selections[number] == question[9] %}correct{% elif user_selections[number] == D and user_selections[number] != question[9] %}wrong{% endif %}">
+                          <input type="radio" name="q{{ question[0] }}" value="{{ D }}" {% if user_selections[number] == D %}checked{% endif %}>
+                          D) {{ D }}
                       </label>
                   </div>
-
-                    <div class="card-body">
-                        {% if test_taken or teacher %}
-                            <p class="text-danger">                   
-                                Correct Answer: {{ question[9] }} <br>
-                                Explanation: {{ question[10] }}
-                            </p>
-                        {% endif %}
-                    </div>
-                </div>
-                <br>
+                  
+                  <div class="card-body">
+                      {% if test_taken or teacher %}
+                          <p class="text-danger">                   
+                              Correct Answer: {{ question[9] }} <br>
+                              Explanation: {{ question[10] }}
+                          </p>
+                      {% endif %}
+                  </div>
+              </div>
+              <br>
           {% endfor %}
+
 
 
 
@@ -70,7 +74,7 @@
                 <p style="text-align: center;">
                   Score: {{ score }} <br>
                   Total: {{ total }} <br>
-                  Percent: {{ (score/total)*100 }}
+                  Percent: {{ "{:.1f}".format((score/total)*100) }}
                 </p>
               </div>
 
