@@ -1,0 +1,31 @@
+qnumber,question,optionA,optionB,optionC,optionD,answer,explanation
+1,What does HTML stand for?,Hypertext Markup Language,Hyperlink Markup Language,Home Tool Markup Language,Hypertext Meta Language,Hypertext Markup Language,HTML stands for Hypertext Markup Language.
+2,Which of the following is not a web browser?,Microsoft Word,Google Chrome,Mozilla Firefox,Safari,Microsoft Word,Microsoft Word is not a web browser.
+3,What is the purpose of HTML?,To structure and present content on the web,To perform calculations and data analysis,To create and edit images,To send and receive emails,To structure and present content on the web,The purpose of HTML is to structure and present content on the web.
+4,Which tag is used to define the document type and version of HTML being used?,<!DOCTYPE>,<html>,<head>,<body>,<!DOCTYPE>,The <!DOCTYPE> tag is used to define the document type and version of HTML being used.
+5,Which element is used to enclose the entire HTML document?,<html>,<head>,<body>,<title>,<html>,The <html> element is used to enclose the entire HTML document.
+6,Which tag is used to define the title of an HTML document?,<title>,<head>,<h1>,<body>,<title>,The <title> tag is used to define the title of an HTML document.
+7,Which tag is used to insert a line break?,<br>,<p>,<hr>,<a>,<br>,The <br> tag is used to insert a line break in HTML.
+8,Which attribute is used to provide alternative text for an image?,alt,src,href,title,alt,"The ""alt"" attribute is used to provide alternative text for an image."
+9,Which tag is used to define the main content of a web page?,<main>,<section>,<body>,<div>,<main>,The <main> tag is used to define the main content of a web page.
+10,Which tag is used to define a paragraph?,<p>,<br>,<div>,<span>,<p>,The <p> tag is used to define a paragraph in HTML.
+11,Which attribute is used to specify the background color of an element?,bgcolor,background-color,color,bg-color,background-color,"The ""background-color"" attribute is used to specify the background color of an element."
+12,Which tag is used to define a level 1 heading?,<h1>,<h2>,<h3>,<h4>,<h1>,The <h1> tag is used to define a level 1 heading in HTML.
+13,Which attribute is used to make text bold?,<strong>,<bold>,<b>,<em>,<b>,The <b> tag is used to make text bold in HTML.
+14,Which tag is used to insert an image?,<img>,<image>,<picture>,<src>,<img>,The <img> tag is used to insert an image in HTML.
+15,Which attribute is used to create a hyperlink?,href,src,alt,text,href,"The ""href"" attribute is used to create a hyperlink in HTML."
+16,Which tag is used to create an unordered list?,<ul>,<ol>,<li>,<dl>,<ul>,The <ul> tag is used to create an unordered list in HTML.
+17,Which attribute is used to specify the width of an element?,width,height,size,dimension,width,"The ""width"" attribute is used to specify the width of an element."
+18,Which tag is used to create a table?,<table>,<tr>,<td>,<th>,<table>,The <table> tag is used to create a table in HTML.
+19,Which attribute is used to define the alignment of text within an element?,align,text-align,alignment,text-alignment,text-align,"The ""text-align"" attribute is used to define the alignment of text within an element."
+20,Which tag is used to define a hyperlink?,<a>,<link>,<href>,<hyperlink>,<a>,The <a> tag is used to define a hyperlink in HTML.
+21,Which attribute is used to specify the font size?,font-size,text-size,size,fontsize,font-size,"The ""font-size"" attribute is used to specify the font size."
+22,Which tag is used to create a level 2 heading?,<h2>,<h1>,<h3>,<h4>,<h2>,The <h2> tag is used to create a level 2 heading in HTML.
+23,Which attribute is used to specify the alignment of an image?,align,image-align,image-position,position,align,"The ""align"" attribute is used to specify the alignment of an image."
+24,Which tag is used to define a link to an external CSS file?,<link>,<style>,<script>,<meta>,<link>,The <link> tag is used to define a link to an external CSS file.
+25,Which attribute is used to specify the text color?,color,text-color,text,font-color,color,"The ""color"" attribute is used to specify the text color."
+26,Which tag is used to create a level 3 heading?,<h3>,<h2>,<h4>,<h5>,<h3>,The <h3> tag is used to create a level 3 heading in HTML.
+27,Which attribute is used to specify the height of an element?,height,width,size,dimension,height,"The ""height"" attribute is used to specify the height of an element."
+28,Which tag is used to create a division or section in HTML?,<div>,<section>,<span>,<p>,<div>,The <div> tag is used to create a division or section in HTML.
+29,Which attribute is used to specify whether an input field should be required?,required,mandatory,validate,validate-field,required,"The ""required"" attribute is used to specify whether an input field should be required."
+30,Which tag is used to define an ordered list?,<ol>,<ul>,<li>,<dl>,<ol>,The <ol> tag is used to define an ordered list in HTML.

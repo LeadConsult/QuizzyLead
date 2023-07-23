@@ -1,0 +1,31 @@
+qnumber,question,optionA,optionB,optionC,optionD,answer,explanation
+1,Which HTML tag is used to insert an image in a web page?,<img>,<image>,<picture>,<src>,<img>,The <img> tag is used to insert an image in a web page.
+2,What is the correct HTML attribute to specify the source URL of an image?,src,href,link,source,src,"The ""src"" attribute is used to specify the source URL of an image."
+3,What is the correct HTML tag for creating a hyperlink?,<a>,<link>,<href>,<url>,<a>,The <a> tag is used to create a hyperlink.
+4,Which HTML attribute is used to specify the URL to navigate when a link is clicked?,href,url,link,navigate,href,"The ""href"" attribute is used to specify the URL to navigate when a link is clicked."
+5,How do you open a link in a new browser tab or window?,"target=""_blank""","target=""_new""","target=""newtab""","target=""window""","target=""_blank""","The ""target"" attribute with the value ""_blank"" is used to open a link in a new browser tab or window."
+6,Which HTML attribute is used to specify the alternative text for an image?,alt,description,caption,text,alt,"The ""alt"" attribute is used to specify the alternative text for an image."
+7,What is the correct HTML tag for creating a clickable button?,<button>,<input>,<submit>,<click>,<button>,The <button> tag is used to create a clickable button.
+8,Which HTML attribute is used to specify the text to be displayed on a button?,value,text,display,label,value,"The ""value"" attribute is used to specify the text to be displayed on a button."
+9,What is the correct HTML tag for creating an email link?,"<a href=""mailto:email@example.com"">","<a href=""email@example.com"">","<a mailto=""email@example.com"">","<a link=""email@example.com"">","<a href=""mailto:email@example.com"">","The correct syntax for creating an email link is <a href=""mailto:email@example.com"">."
+10,Which HTML attribute is used to specify the target email address for an email link?,href,mailto,target,email,href,"The ""href"" attribute with the value ""mailto:email@example.com"" is used to specify the target email address for an email link."
+11,What is the correct HTML tag for creating a link to another section within the same web page?,<a>,<link>,<section>,<url>,<a>,The <a> tag is used to create a link to another section within the same web page.
+12,Which HTML attribute is used to specify the ID of the target section for an internal link?,href,id,target,section,href,"The ""href"" attribute is used to specify the ID of the target section for an internal link."
+13,What is the correct HTML tag for creating an anchor point?,"<a name=""anchor""></a>",<anchor></anchor>,"<a href=""#anchor""></a>","<a id=""anchor""></a>","<a name=""anchor""></a>","The correct syntax for creating an anchor point is <a name=""anchor""></a>."
+14,Which HTML attribute is used to specify the URL of the linked document?,href,src,url,link,href,"The ""href"" attribute is used to specify the URL of the linked document."
+15,What is the correct HTML tag for creating an image as a link?,<a>,<img>,<link>,<href>,<a>,The <a> tag is used to create an image as a link.
+16,Which HTML attribute is used to specify the alignment of an image?,align,image-align,position,alignment,align,"The ""align"" attribute is used to specify the alignment of an image."
+17,What is the correct HTML tag for creating a download link?,"<a href=""file.pdf"" download>","<a href=""file.pdf"">","<a download href=""file.pdf"">","<download href=""file.pdf"">","<a href=""file.pdf"" download>","The correct syntax for creating a download link is <a href=""file.pdf"" download>."
+18,Which HTML attribute is used to specify the filename of the downloadable file?,download,filename,file,src,download,"The ""download"" attribute is used to specify the filename of the downloadable file."
+19,What is the correct HTML tag for creating a link to a CSS file?,<link>,<href>,<stylesheet>,<style>,<link>,The <link> tag is used to create a link to a CSS file.
+20,Which HTML attribute is used to specify the type of the linked resource?,type,src,href,format,type,"The ""type"" attribute is used to specify the type of the linked resource."
+21,What is the correct HTML tag for creating a link to an external JavaScript file?,<script>,<link>,<href>,<js>,<script>,The <script> tag is used to create a link to an external JavaScript file.
+22,Which HTML attribute is used to specify the character encoding of the linked script?,charset,encoding,type,src,charset,"The ""charset"" attribute is used to specify the character encoding of the linked script."
+23,What is the correct HTML tag for creating a link to a video file?,<video>,<link>,<a>,<href>,<video>,The <video> tag is used to create a link to a video file.
+24,Which HTML attribute is used to specify the source URL of the video?,src,url,video-source,video-url,src,"The ""src"" attribute is used to specify the source URL of the video."
+25,What is the correct HTML tag for creating a link to an audio file?,<audio>,<sound>,<link>,<a>,<audio>,The <audio> tag is used to create a link to an audio file.
+26,Which HTML attribute is used to specify the source URL of the audio?,src,url,sound-source,audio-url,src,"The ""src"" attribute is used to specify the source URL of the audio."
+27,What is the correct HTML tag for creating a link to a PDF document?,"<a href=""document.pdf"">","<a href=""document.pdf"" target=""_blank"">","<a href=""document.pdf"" download>","<a href=""document.pdf"" type=""application/pdf"">","<a href=""document.pdf"">","The correct syntax for creating a link to a PDF document is <a href=""document.pdf"">."
+28,Which HTML attribute is used to specify the alignment of a table cell content?,align,content,cell-align,cell-content,align,"The ""align"" attribute is used to specify the alignment of a table cell content."
+29,What is the correct HTML tag for creating a link to a specific section within the same web page?,"<a href=""#section"">","<a href=""section"">","<a href=""section.html"">","<a name=""section""></a>","<a href=""#section"">","The correct syntax for creating a link to a specific section within the same web page is <a href=""#section"">."
+30,Which HTML attribute is used to specify the target frame or window for a link?,target,window,frame,navigate,target,"The ""target"" attribute is used to specify the target frame or window for a link."
