@@ -1,6 +1,0 @@
-qnumber,question,optionA,optionB,optionC,optionD,answer,explanation
-1,What does HTML stand for?,Hypertext Markup Language,Hyperlink Markup Language,Home Tool Markup Language,Hypertext Meta Language,Hypertext Markup Language,HTML stands for Hypertext Markup Language.
-2,Which of the following is not a web browser?,Microsoft Word,Google Chrome,Mozilla Firefox,Safari,Microsoft Word,Microsoft Word is not a web browser.
-3,What is the purpose of HTML?,To structure and present content on the web,To perform calculations and data analysis,To create and edit images,To send and receive emails,To structure and present content on the web,The purpose of HTML is to structure and present content on the web.
-4,Which tag is used to define the document type and version of HTML being used?,<!DOCTYPE>,<html>,<head>,<body>,<!DOCTYPE>,The <!DOCTYPE> tag is used to define the document type and version of HTML being used.
-5,Which element is used to enclose the entire HTML document?,<html>,<head>,<body>,<title>,<html>,The <html> element is used to enclose the entire HTML document.
