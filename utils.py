@@ -3,6 +3,7 @@ import csv
 import random
 from auth import get_twitter_conn_v1, get_twitter_conn_v2
 from trend import scrape_and_sort
+from keys import api_key, api_secret, access_token, access_token_secret
 
 # Constants
 APP_DIR = os.path.dirname(__file__)
