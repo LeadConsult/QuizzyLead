@@ -1,14 +1,24 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 from datetime import datetime, timedelta
+from flask import Flask, jsonify
+
 from utils import create_and_post_tweet, client_v1, client_v2
+
+app = Flask(__name__)
 
 # Define a function to run the job
 def job():
     now_gmt1 = datetime.now()
 
     print(f"Job run at {now_gmt1}")
-    
+
     create_and_post_tweet(client_v1, client_v2)
+
+# Route for the Cyclic API request
+@app.route('/run-my-script', methods=['GET'])
+def run_my_script():
+    job()  # Run the job immediately
+    return jsonify({"message": "Script executed"})
 
 if __name__ == '__main__':
     # Initialize the scheduler
@@ -22,3 +32,6 @@ if __name__ == '__main__':
 
     # Start the scheduler
     scheduler.start()
+
+    # Start the Flask app
+    app.run(host='0.0.0.0', port=8080)
