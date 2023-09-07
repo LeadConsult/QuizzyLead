@@ -43,4 +43,4 @@ if __name__ == '__main__':
     scheduler.start()
 
     # Start the Flask app on a dynamic port assigned by Cyclic
-    app.run(host='0.0.0.0', port=9001)  # Use 0.0.0.0 to listen on all available network interfaces
+    app.run(host='0.0.0.0', port=3000)  # Use 0.0.0.0 to listen on all available network interfaces
