@@ -12,8 +12,8 @@ def job():
         now_gmt1 = datetime.now()
         print(f"Job run at {now_gmt1}")
 
-        # Add error handling for create_and_post_tweet
-        create_and_post_tweet(client_v1, client_v2)
+        # # Add error handling for create_and_post_tweet
+        # create_and_post_tweet(client_v1, client_v2)
     except Exception as e:
         print(f"Error in job: {e}")
 
@@ -41,7 +41,8 @@ def index():
 def api():
     try:
         # Call the job function
-        job()
+        job()        
+        create_and_post_tweet(client_v1, client_v2)
         print("Script executed from job")
         return jsonify({"message": "Script executed successfully"})
     except Exception as e:
