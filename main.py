@@ -17,6 +17,25 @@ def job():
     except Exception as e:
         print(f"Error in job: {e}")
 
+#return index to avoid error
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    # HTML content as a string
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Report Page</title>
+    </head>
+    <body>
+        <h1>Hello, Tweet</h1>
+        <p>The bot is still active and running.</p>
+    </body>
+    </html>
+    """    
+    return html_content
+
+
 # Route for the Cyclic API request
 @app.route('/api', methods=['GET'])
 def api():
