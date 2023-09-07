@@ -31,16 +31,16 @@ def api():
 
 if __name__ == '__main__':
     # Initialize the scheduler
-    scheduler = BlockingScheduler()
+    # scheduler = BlockingScheduler()
 
     # Define the cron expression for scheduling (every hour)
-    cron_expression = '0 * * * *'
+    # cron_expression = '0 * * * *'
 
     # Add the job with the cron expression
-    scheduler.add_job(job, 'cron', minute=0)
+    # scheduler.add_job(job, 'cron', minute=0)
 
     # Start the scheduler
-    scheduler.start()
+    # scheduler.start()
 
     # Start the Flask app on a dynamic port assigned by Cyclic
     app.run(host='0.0.0.0', port=3000)  # Use 0.0.0.0 to listen on all available network interfaces
