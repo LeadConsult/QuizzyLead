@@ -51,11 +51,11 @@ def scrape_and_sort():
         formatted_data = formatted_data[:100]
 
         # Write the formatted data to CSV file (overwrite)
-        with open('temp_content.csv', 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['trendText']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            # writer.writeheader()
-            writer.writerow({'trendText': formatted_data})
+        # with open('temp_content.csv', 'w', newline='', encoding='utf-8') as csvfile:
+        #     fieldnames = ['trendText']
+        #     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        #     # writer.writeheader()
+        #     writer.writerow({'trendText': formatted_data})
 
         # print('Data scraped, sorted, and written to CSV successfully')
         # print(formatted_data)
