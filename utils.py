@@ -56,4 +56,4 @@ def create_and_post_tweet(client_v1, client_v2):
         # print(tweet_content+"\n"+"\n"+"-----------\n"+trend)
 
 # Call create_and_post_tweet with your Twitter API clients
-create_and_post_tweet(client_v1, client_v2)
+# create_and_post_tweet(client_v1, client_v2)
