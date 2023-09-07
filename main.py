@@ -8,18 +8,26 @@ app = Flask(__name__)
 
 # Define a function to run the job
 def job():
-    now_gmt1 = datetime.now()
+    try:
+        now_gmt1 = datetime.now()
+        print(f"Job run at {now_gmt1}")
 
-    print(f"Job run at {now_gmt1}")
-
-    create_and_post_tweet(client_v1, client_v2)
+        # Add error handling for create_and_post_tweet
+        create_and_post_tweet(client_v1, client_v2)
+    except Exception as e:
+        print(f"Error in job: {e}")
 
 # Route for the Cyclic API request
 @app.route('/api', methods=['GET'])
 def api():
-    job()  # Run the job immediately
-    print("Script executed fro job")
-    return jsonify({"message": "Script executed"})
+    try:
+        # Call the job function
+        job()
+        print("Script executed from job")
+        return jsonify({"message": "Script executed successfully"})
+    except Exception as e:
+        print(f"Error in API route: {e}")
+        return jsonify({"error": "An error occurred"}), 500  # Return a 500 error response
 
 if __name__ == '__main__':
     # Initialize the scheduler
@@ -34,5 +42,5 @@ if __name__ == '__main__':
     # Start the scheduler
     scheduler.start()
 
-    # Start the Flask app
-    app.run()
+    # Start the Flask app on a dynamic port assigned by Cyclic
+    app.run(host='0.0.0.0', port=9001)  # Use 0.0.0.0 to listen on all available network interfaces
