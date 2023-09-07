@@ -1,0 +1,10 @@
+{
+  "name": "python-script-runner",
+  "version": "1.0.0",
+  "description": "A package to run a Python script using npm",
+  "scripts": {
+    "start": "python main.py"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
