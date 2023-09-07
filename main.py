@@ -15,9 +15,10 @@ def job():
     create_and_post_tweet(client_v1, client_v2)
 
 # Route for the Cyclic API request
-@app.route('/run-my-script', methods=['GET'])
-def run_my_script():
+@app.route('/api', methods=['GET'])
+def api():
     job()  # Run the job immediately
+    print("Script executed fro job")
     return jsonify({"message": "Script executed"})
 
 if __name__ == '__main__':
