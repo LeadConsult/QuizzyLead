@@ -48,13 +48,6 @@ def create_and_post_tweet(client_v1, client_v2):
     # Modify this part to use the randomly chosen image
     image_path = get_random_image()
     if image_path is not None:
-        print(f"API Key: {api_key}")
-        print(f"API Secret: {api_secret}")
-        print(f"Access Token: {access_token}")
-        print(f"Access Token Secret: {access_token_secret}")
-        user = client_v1.get_user(screen_name="@atola4u")
-        print(f"User's name: {user.name}")
-
         media = client_v1.simple_upload(filename=image_path)
         media_id = media.media_id
 
