@@ -26,8 +26,8 @@ def scrape_and_sort():
                     trend_text = anchor_element.text
                     tweet_count = tweet_count_element.text
 
-                    # Limit content to 100 characters
-                    trend_text = trend_text[:100]
+                    # Limit content to 120 characters
+                    trend_text = trend_text[:120]
 
                     trends.append({'trendText': trend_text, 'tweetCount': tweet_count})
 
